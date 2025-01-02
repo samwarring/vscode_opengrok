@@ -134,7 +134,9 @@ export function buildTreeItems(
     // building the tree.
     let directoryItems = new Map<string, TreeItem>();
 
-    for (const filePath in searchResponseBody.results) {
+    // Visit results in sorted order.
+    let filePaths = Object.keys(searchResponseBody.results).sort();
+    filePaths.forEach((filePath) => {
         // Add the directory item if not already added.
         const directoryPath = path.dirname(filePath);
         let directoryItem = directoryItems.get(directoryPath);
@@ -160,7 +162,7 @@ export function buildTreeItems(
                 directoryPath, filePath, lineIndex);
             fileItem.addChild(lineItem);
         }
-    }
+    });
 
     return resultItem;
 }
