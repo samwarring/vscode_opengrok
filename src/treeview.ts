@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as opengrok from './opengrok'
 import * as path from 'path'
+import * as he from 'he'
 
 export enum TreeItemKind {
     Result,
@@ -67,8 +68,57 @@ export class TreeItem extends vscode.TreeItem {
     private constructLineItem() {
         const fileResults = this.searchResponseBody.results[this.filePath!];
         const lineResult = fileResults[this.lineIndex!];
-        this.label = lineResult.line;
+        
+        // Format the label:
+        // - Trim whitespace.
+        // - Unescape HTML entities (e.g. replace '&gt;' with '>').
+        // - Locate and remove <b> and </b> tags (there may be more than one).
+        let labelText = lineResult.line.trim();
+        labelText = he.unescape(labelText);
+        const highlights = this.getHighlights(labelText);
+        labelText = labelText.replaceAll('<b>', '').replaceAll('</b>', '');
+        this.label = {
+            label: labelText,
+            highlights: highlights
+        };
+
+        // Add the description.
+        if (lineResult.tag) {
+            this.description =
+                `${lineResult.tag}, ` + `line ${lineResult.lineNumber}`;
+        }
+        else {
+            this.description = `line ${lineResult.lineNumber}`;
+        }
+
+        // Line items don't have children.
         this.collapsibleState = vscode.TreeItemCollapsibleState.None;
+    }
+
+    // Return a list of [startPos, endPos] where each pair indicates a range
+    // to be highlighted. The ranges are selected by the locating matching
+    // <b> and </b> pairs in the input string.
+    //
+    // The positions of each range are adjusted with the assumption that the
+    // <b> and </b> tags will be removed from the line, but this function does
+    // NOT remove those tags.
+    private getHighlights(line: string): [number, number][] {
+        let result: [number, number][] = [];
+        let offset = 0;
+        let pos = 0
+        while (true) {
+            const startPos = line.indexOf('<b>', pos);
+            if (startPos == -1) {
+                break;
+            }
+            pos = line.indexOf('</b>', startPos);
+            if (pos == -1) {
+                break;
+            }
+            result.push([startPos - offset, pos - (offset + '<b>'.length)]);
+            offset += '<b></b>'.length;
+        }
+        return result;
     }
 }
 
