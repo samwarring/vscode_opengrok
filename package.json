@@ -17,7 +17,23 @@
         "command": "openGrok.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "OpenGrok",
+      "properties": {
+        "openGrok.serverURL": {
+          "type": "string",
+          "markdownDescription": "Full URL of the OpenGrok server. This must include the leading `http://` or `https://`."
+        },
+        "openGrok.defaultProjectNames": {
+          "type": "array",
+          "description": "Default project(s) used for search queries.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
