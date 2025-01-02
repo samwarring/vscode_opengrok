@@ -16,6 +16,11 @@
       {
         "command": "openGrok.search",
         "title": "OpenGrok: Search"
+      },
+      {
+        "command": "openGrok.clearResults",
+        "title": "OpenGrok: Clear Results",
+        "icon": "$(search-clear-results)"
       }
     ],
     "configuration": {
@@ -33,6 +38,15 @@
           }
         }
       }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "openGrok.clearResults",
+          "when": "view == openGrokResults",
+          "group": "navigation"
+        }
+      ]
     },
     "views": {
       "openGrokResultsContainer": [

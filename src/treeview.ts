@@ -187,6 +187,11 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
         this._onDidChangeTreeData.fire();
     }
 
+    clearResults() {
+        this._resultItems = [];
+        this._onDidChangeTreeData.fire();
+    }
+
     getTreeItem(element: TreeItem): vscode.TreeItem {
         return element;
     }

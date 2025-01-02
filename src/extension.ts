@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand(
+	const commandSearch = vscode.commands.registerCommand(
 		'openGrok.search',
 		async () => {
 			// Prompt query from user.
@@ -65,9 +65,14 @@ export function activate(context: vscode.ExtensionContext) {
 				searchQuery,
 				searchResponseBody);
 			treeDataProvider.addResult(resultTreeItem);
-	});
+		}
+	);
 
-	context.subscriptions.push(disposable);
+	const commandClearResults = vscode.commands.registerCommand(
+		'openGrok.clearResults',
+		() => { treeDataProvider.clearResults(); });
+
+	context.subscriptions.push(commandSearch, commandClearResults);
 }
 
 // This method is called when your extension is deactivated
