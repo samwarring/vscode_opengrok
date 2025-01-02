@@ -33,6 +33,23 @@
           }
         }
       }
+    },
+    "views": {
+      "openGrokResultsContainer":[
+        {
+          "id": "openGrokResults",
+          "name": "Grok"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "openGrokResultsContainer",
+          "title": "Grok",
+          "icon": "$(search)"
+        }
+      ]
     }
   },
   "scripts": {

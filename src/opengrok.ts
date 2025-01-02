@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import * as vscode from 'vscode';
 
 // SearchQuery objects describe the input to OpenGrok's /search API.
-interface SearchQuery {
+export interface SearchQuery {
     server: string;
     projects: string[];
     path?: string[];
@@ -11,7 +11,7 @@ interface SearchQuery {
     symbol?: string[];
 }
 
-interface SearchResponseBody {
+export interface SearchResponseBody {
     time: number;
     resultCount: number;
     startDocument: number;
@@ -133,6 +133,28 @@ export function parseQuery(rawQuery: string): SearchQuery | null {
     }
 
     return result;
+}
+
+// Returns a canonical string description of the given query, which can
+// be displayed to the user.
+export function getCanonicalQuery(searchQuery: SearchQuery): string {
+    let result: string[] = []
+    searchQuery.projects.forEach((project) => {
+        result.push(`project:${project}`);
+    });
+    searchQuery.path?.forEach((path) => {
+        result.push(`path:${path}`);
+    })
+    searchQuery.full?.forEach((full) => {
+        result.push(`full:${full}`);
+    });
+    searchQuery.def?.forEach((def) => {
+        result.push(`def:${def}`);
+    });
+    searchQuery.symbol?.forEach((symbol) => {
+        result.push(`symbol:${symbol}`);
+    });
+    return result.join(' ');
 }
 
 // Invokes the /search API on the OpenGrok server.
