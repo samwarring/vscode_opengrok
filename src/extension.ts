@@ -68,11 +68,23 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
+	const commandViewInBrowser = vscode.commands.registerCommand(
+		'openGrok.viewInBrowser',
+		(treeItem: treeview.TreeItem) => {
+			const browserURL = treeItem.getBrowserURL().toString();
+			console.log(`Open in browser: ${browserURL}`);
+			vscode.env.openExternal(vscode.Uri.parse(browserURL)); 
+		}
+	);
+
 	const commandClearResults = vscode.commands.registerCommand(
 		'openGrok.clearResults',
 		() => { treeDataProvider.clearResults(); });
 
-	context.subscriptions.push(commandSearch, commandClearResults);
+	context.subscriptions.push(
+		commandSearch,
+		commandViewInBrowser,
+		commandClearResults);
 }
 
 // This method is called when your extension is deactivated

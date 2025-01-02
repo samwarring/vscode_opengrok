@@ -21,6 +21,11 @@
         "command": "openGrok.clearResults",
         "title": "OpenGrok: Clear Results",
         "icon": "$(search-clear-results)"
+      },
+      {
+        "command": "openGrok.viewInBrowser",
+        "title": "OpenGrok: Show In Browser",
+        "icon": "$(link-external)"
       }
     ],
     "configuration": {
@@ -40,6 +45,13 @@
       }
     },
     "menus": {
+      "view/item/context": [
+        {
+          "command": "openGrok.viewInBrowser",
+          "when": "view == openGrokResults",
+          "group": "inline"
+        }
+      ],
       "view/title": [
         {
           "command": "openGrok.clearResults",

@@ -48,6 +48,28 @@ export class TreeItem extends vscode.TreeItem {
         return this._children;
     }
 
+    getBrowserURL(): URL {
+        switch (this.kind) {
+            case TreeItemKind.Result:
+                return opengrok.getResultsBrowserURL(this.searchQuery);
+            case TreeItemKind.Directory:
+                return opengrok.getDirectoryBrowserURL(
+                    this.searchQuery.server, this.directoryPath!);
+            case TreeItemKind.File:
+                return opengrok.getFileBrowserURL(
+                    this.searchQuery.server, this.filePath!);
+            case TreeItemKind.Line:
+                const results = this.searchResponseBody.results;
+                const lineResult = results[this.filePath!][this.lineIndex!];
+                const lineNum = parseInt(lineResult.lineNumber);
+                return opengrok.getLineBrowserURL(
+                    this.searchQuery.server, this.filePath!, lineNum);
+            default:
+                console.error(`Invalid tree item kind: ${this.kind}`);
+                return new URL(this.searchQuery.server);
+        }
+    }
+
     private constructResultItem() {
         const canonQuery = opengrok.getCanonicalQuery(this.searchQuery)
         const numResults = this.searchResponseBody.resultCount;

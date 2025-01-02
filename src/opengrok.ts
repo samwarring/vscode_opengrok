@@ -189,3 +189,44 @@ export async function search(searchQuery: SearchQuery): Promise<SearchResponseBo
 
     return Promise.resolve(responseJSON);
 }
+
+export function getResultsBrowserURL(searchQuery: SearchQuery): URL {
+    let url = new URL(`${searchQuery.server}/search`);
+    searchQuery.projects.forEach((project) => {
+        url.searchParams.append('project', project);
+    });
+    searchQuery.path?.forEach((path) => {
+        url.searchParams.append('path', path);
+    });
+    searchQuery.full?.forEach((full) => {
+        url.searchParams.append('full', full);
+    });
+    searchQuery.def?.forEach((def) => {
+        url.searchParams.append('defs', def);
+    });
+    searchQuery.symbol?.forEach((symbol) => {
+        url.searchParams.append('refs', symbol);
+    });
+    return url;
+}
+
+export function getDirectoryBrowserURL(
+    server: string,
+    directoryPath: string): URL {
+
+    return new URL(`${server}/xref/${directoryPath}`);
+}
+
+export function getFileBrowserURL(server: string, filePath: string): URL {
+    return new URL(`${server}/xref/${filePath}`);
+}
+
+export function getLineBrowserURL(
+    server: string,
+    filePath: string,
+    lineNumber: number): URL {
+
+    let url = new URL(`${server}/xref/${filePath}`);
+    url.hash = lineNumber.toString();
+    return url;
+}
