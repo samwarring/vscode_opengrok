@@ -56,13 +56,12 @@ export class TreeItem extends vscode.TreeItem {
 
     private constructDirectoryItem() {
         this.label = this.directoryPath!;
-        this.iconPath = new vscode.ThemeIcon('folder');
     }
 
     private constructFileItem() {
         this.label = path.basename(this.filePath!);
-        // TODO: Get filetype specific icon.
-        this.iconPath = new vscode.ThemeIcon('file');
+        this.iconPath = vscode.ThemeIcon.File;
+        this.resourceUri = vscode.Uri.parse(this.filePath!);
     }
 
     private constructLineItem() {
