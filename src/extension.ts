@@ -14,7 +14,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register the treeview.
 	let treeDataProvider = new treeview.TreeDataProvider();
-	vscode.window.registerTreeDataProvider('openGrokResults', treeDataProvider);
+	let treeViewOptions: vscode.TreeViewOptions<treeview.TreeItem> = {
+		treeDataProvider: treeDataProvider,
+		canSelectMany: false,
+		showCollapseAll: true
+	};
+	vscode.window.createTreeView('openGrokResults', treeViewOptions);
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
