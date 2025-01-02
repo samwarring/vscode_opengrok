@@ -14,15 +14,40 @@ export function activate(context: vscode.ExtensionContext) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('openGrok.search', async () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		const config = vscode.workspace.getConfiguration();
-		const searchResponseBody = await opengrok.search({
-			server: config.get('openGrok.serverURL', ''),
-			projects: config.get<string[]>('openGrok.defaultProjectNames', []),
-			symbol: 'Example'
-		});
+	const disposable = vscode.commands.registerCommand(
+		'openGrok.search',
+		async () => {
+			// Prompt query from user.
+			const rawQuery = await vscode.window.showInputBox({
+				title: "OpenGrok: Search",
+				prompt: "Enter an OpenGrok query"
+			});
+			if (!rawQuery) {
+				// User cancelled the operation.
+				return;
+			}
+
+			// Parse query.
+			let searchQuery = opengrok.parseQuery(rawQuery);
+			if (!searchQuery) {
+				vscode.window.showErrorMessage('Invalid search query');
+				return;
+			}
+			
+			// Perform query.
+			const config = vscode.workspace.getConfiguration();
+			searchQuery.server = config.get('openGrok.serverURL', '');
+			searchQuery.projects.push(...config.get<string[]>(
+				'openGrok.defaultProjectNames', []));
+			console.log(searchQuery);
+
+			try {
+				const searchResponseBody = await opengrok.search(searchQuery);
+			}
+			catch (error) {
+				vscode.window.showErrorMessage(
+					`Failed to query the server.\n${error}`)
+			}
 	});
 
 	context.subscriptions.push(disposable);
