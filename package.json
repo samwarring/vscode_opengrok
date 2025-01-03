@@ -26,6 +26,11 @@
         "command": "openGrok.viewInBrowser",
         "title": "OpenGrok: Show In Browser",
         "icon": "$(link-external)"
+      },
+      {
+        "command": "openGrok.openInEditor",
+        "title": "OpenGrok: Open In Editor",
+        "icon": "$(go-to-file)"
       }
     ],
     "configuration": {
@@ -45,6 +50,16 @@
       }
     },
     "menus": {
+      "commandPalette": [
+        {
+          "command": "openGrok.viewInBrowser",
+          "when": "false"
+        },
+        {
+          "command": "openGrok.openInEditor",
+          "when": "false"
+        }
+      ],
       "view/item/context": [
         {
           "command": "openGrok.viewInBrowser",

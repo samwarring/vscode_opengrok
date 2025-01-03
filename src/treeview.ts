@@ -12,6 +12,7 @@ export enum TreeItemKind {
 
 export class TreeItem extends vscode.TreeItem {
     private _children: TreeItem[] = [];
+    public lineNumber: number | null = null;
 
     constructor(
         public readonly searchQuery: opengrok.SearchQuery,
@@ -59,11 +60,8 @@ export class TreeItem extends vscode.TreeItem {
                 return opengrok.getFileBrowserURL(
                     this.searchQuery.server, this.filePath!);
             case TreeItemKind.Line:
-                const results = this.searchResponseBody.results;
-                const lineResult = results[this.filePath!][this.lineIndex!];
-                const lineNum = parseInt(lineResult.lineNumber);
                 return opengrok.getLineBrowserURL(
-                    this.searchQuery.server, this.filePath!, lineNum);
+                    this.searchQuery.server, this.filePath!, this.lineNumber!);
             default:
                 console.error(`Invalid tree item kind: ${this.kind}`);
                 return new URL(this.searchQuery.server);
@@ -89,6 +87,9 @@ export class TreeItem extends vscode.TreeItem {
     private constructLineItem() {
         const fileResults = this.searchResponseBody.results[this.filePath!];
         const lineResult = fileResults[this.lineIndex!];
+
+        // Initialize the line number
+        this.lineNumber = parseInt(lineResult.lineNumber);
         
         // Format the label:
         // - Trim whitespace.
@@ -105,15 +106,24 @@ export class TreeItem extends vscode.TreeItem {
 
         // Add the description.
         if (lineResult.tag) {
-            this.description =
-                `${lineResult.tag}, ` + `line ${lineResult.lineNumber}`;
+            this.description = `${lineResult.tag}, line ${this.lineNumber}`;
         }
         else {
-            this.description = `line ${lineResult.lineNumber}`;
+            this.description = `line ${this.lineNumber}`;
         }
 
         // Line items don't have children.
         this.collapsibleState = vscode.TreeItemCollapsibleState.None;
+
+        // When selected, open the matching line in the editor. The argument
+        // to the command is a shallow copy of this tree item. The shallow copy
+        // is needed to prevent construction of a circular-reference object.
+        const shallowClone = {...this};
+        this.command = {
+            title: 'Open in Editor',
+            command: 'openGrok.openInEditor',
+            arguments: [shallowClone]
+        };
     }
 
     // Return a list of [startPos, endPos] where each pair indicates a range

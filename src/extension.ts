@@ -3,6 +3,8 @@
 import * as vscode from 'vscode';
 import * as opengrok from './opengrok';
 import * as treeview from './treeview';
+import * as path from 'path';
+import * as fs from 'fs';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -77,6 +79,36 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
+	const commandOpenInEditor = vscode.commands.registerCommand(
+		'openGrok.openInEditor',
+		(treeItem: treeview.TreeItem) => {
+			// Get workspace folder.
+			const workspaceFolder = 
+				vscode.workspace.workspaceFolders ?
+				vscode.workspace.workspaceFolders[0].uri.path : '/';
+			
+			// Remove first /directory from the file path. This directory would
+			// be the name of the grok-project.
+			const filePathWithoutProject =
+				treeItem.filePath!.split('/').slice(2).join('/');
+
+			// Make a new path relative to the workspace.
+			const localPath = path.join(workspaceFolder, filePathWithoutProject);
+			if (!fs.existsSync(localPath)) {
+				vscode.window.showWarningMessage(`File not found: ${localPath}`);
+				return;
+			}
+			
+			const uri = vscode.Uri.from({
+				scheme: 'vscode',
+				authority: 'file',
+				path: `${localPath}:${treeItem.lineNumber}`
+			});
+			console.log(`Open in editor: ${uri.toString()}`);
+			vscode.commands.executeCommand('vscode.open', uri);
+		}
+	);
+
 	const commandClearResults = vscode.commands.registerCommand(
 		'openGrok.clearResults',
 		() => { treeDataProvider.clearResults(); });
@@ -84,6 +116,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		commandSearch,
 		commandViewInBrowser,
+		commandOpenInEditor,
 		commandClearResults);
 }
 
