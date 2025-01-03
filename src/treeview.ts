@@ -100,23 +100,32 @@ export class TreeItem extends vscode.TreeItem {
         const fileResults = this.searchResponseBody.results[this.filePath!];
         const lineResult = fileResults[this.lineIndex!];
 
-        // Initialize the line number
+        // Initialize the line number.
         this.lineNumber = parseInt(lineResult.lineNumber);
 
-        // Initialize the firstMatchRange
-        this.firstMatchRange = {
-            start: lineResult.line.indexOf('<b>'),
-            end: lineResult.line.indexOf('</b>') - 3
-        };
-        
-        // Format the label:
-        // - Trim whitespace.
-        // - Unescape HTML entities (e.g. replace '&gt;' with '>').
-        // - Locate and remove <b> and </b> tags (there may be more than one).
-        let labelText = lineResult.line.trim();
+        // Unescape HTML entities (e.g. replace '&gt;' with '>').
+        let labelText = lineResult.line;
         labelText = he.unescape(labelText);
+
+        // Initialize the firstMatchRange. This must occur before trimming
+        // whitespace, but after unescaping HTML entities. This ensrues that
+        // selecting the match in the treeview highlights the correct characters
+        // in the file.
+        this.firstMatchRange = {
+            start: labelText.indexOf('<b>'),
+            end: labelText.indexOf('</b>') - '<b>'.length
+        };
+
+        // Trim whitespace.
+        labelText = labelText.trim();
+
+        // Locate highlights for the label (there may be more than one).
         const highlights = this.getHighlights(labelText);
+
+        // Finally, remove <b> and </b> tags from the line.
         labelText = labelText.replaceAll('<b>', '').replaceAll('</b>', '');
+
+        // Initialize the label shown in the treeview.
         this.label = {
             label: labelText,
             highlights: highlights
