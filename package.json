@@ -100,12 +100,12 @@
         {
           "command": "openGrok.search",
           "when": "view == openGrokResults",
-          "group": "navigation"
+          "group": "navigation@0"
         },
         {
           "command": "openGrok.clearResults",
           "when": "view == openGrokResults",
-          "group": "navigation"
+          "group": "navigation@1"
         }
       ]
     },
