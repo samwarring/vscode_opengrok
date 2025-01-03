@@ -6,6 +6,8 @@ import * as treeview from './treeview';
 import * as path from 'path';
 import * as fs from 'fs';
 
+const TREEVIEW_STATE_KEY = 'openGrok.treeViewState';
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -22,6 +24,18 @@ export function activate(context: vscode.ExtensionContext) {
 		showCollapseAll: true
 	};
 	vscode.window.createTreeView('openGrokResults', treeViewOptions);
+
+	// Restore state of the treeview.
+	try {
+		const treeViewState = context.workspaceState.get<treeview.WorkspaceState>(
+			TREEVIEW_STATE_KEY);
+		if (treeViewState) {
+			treeDataProvider.setWorkspaceState(treeViewState);
+		}
+	} catch (error) {
+		vscode.window.showErrorMessage(
+			`Error restoring OpenGrok results: ${error}`);
+	}
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -67,6 +81,10 @@ export function activate(context: vscode.ExtensionContext) {
 				searchQuery,
 				searchResponseBody);
 			treeDataProvider.addResult(resultTreeItem);
+
+			// Save treeview state to be restored if workspace is closed.
+			await context.workspaceState.update(
+				TREEVIEW_STATE_KEY, treeDataProvider.getWorkspaceState());
 		}
 	);
 
@@ -117,7 +135,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const commandClearResults = vscode.commands.registerCommand(
 		'openGrok.clearResults',
-		() => { treeDataProvider.clearResults(); });
+		async () => {
+			treeDataProvider.clearResults();
+			await context.workspaceState.update(
+				TREEVIEW_STATE_KEY, treeDataProvider.getWorkspaceState());
+		}
+	);
 
 	context.subscriptions.push(
 		commandSearch,
