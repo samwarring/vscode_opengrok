@@ -70,8 +70,8 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	const commandViewInBrowser = vscode.commands.registerCommand(
-		'openGrok.viewInBrowser',
+	const commandopenInBrowser = vscode.commands.registerCommand(
+		'openGrok.openInBrowser',
 		(treeItem: treeview.TreeItem) => {
 			const browserURL = treeItem.getBrowserURL().toString();
 			console.log(`Open in browser: ${browserURL}`);
@@ -121,7 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		commandSearch,
-		commandViewInBrowser,
+		commandopenInBrowser,
 		commandOpenInEditor,
 		commandClearResults);
 }

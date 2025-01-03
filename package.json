@@ -23,7 +23,7 @@
         "icon": "$(search-clear-results)"
       },
       {
-        "command": "openGrok.viewInBrowser",
+        "command": "openGrok.openInBrowser",
         "title": "OpenGrok: Show In Browser",
         "icon": "$(link-external)"
       },
@@ -52,7 +52,7 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "openGrok.viewInBrowser",
+          "command": "openGrok.openInBrowser",
           "when": "false"
         },
         {
@@ -62,7 +62,7 @@
       ],
       "view/item/context": [
         {
-          "command": "openGrok.viewInBrowser",
+          "command": "openGrok.openInBrowser",
           "when": "view == openGrokResults",
           "group": "inline"
         }
