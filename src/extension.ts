@@ -142,6 +142,15 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
+	const commandRemoveResultItem = vscode.commands.registerCommand(
+		'openGrok.removeResultItem',
+		async (item: treeview.TreeItem) => {
+			treeDataProvider.removeItem(item);
+			await context.workspaceState.update(
+				TREEVIEW_STATE_KEY, treeDataProvider.getWorkspaceState());
+		}
+	)
+
 	context.subscriptions.push(
 		commandSearch,
 		commandopenInBrowser,

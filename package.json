@@ -23,6 +23,11 @@
         "icon": "$(search-clear-results)"
       },
       {
+        "command": "openGrok.removeResultItem",
+        "title": "OpenGrok: Remove these results",
+        "icon": "$(remove-close)"
+      },
+      {
         "command": "openGrok.openInBrowser",
         "title": "OpenGrok: Show In Browser",
         "icon": "$(link-external)"
@@ -58,13 +63,22 @@
         {
           "command": "openGrok.openInEditor",
           "when": "false"
+        },
+        {
+          "command": "openGrok.removeResultItem",
+          "when": "false"
         }
       ],
       "view/item/context": [
         {
           "command": "openGrok.openInBrowser",
           "when": "view == openGrokResults",
-          "group": "inline"
+          "group": "inline@1"
+        },
+        {
+          "command": "openGrok.removeResultItem",
+          "when": "view == openGrokResults",
+          "group": "inline@2"
         }
       ],
       "view/title": [

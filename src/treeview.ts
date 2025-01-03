@@ -12,6 +12,7 @@ export enum TreeItemKind {
 
 export class TreeItem extends vscode.TreeItem {
     private _children: TreeItem[] = [];
+    public parentItem: TreeItem | null = null;
     public lineNumber: number | null = null;
     public firstMatchRange: {start: number, end: number} | null = null;
 
@@ -43,11 +44,21 @@ export class TreeItem extends vscode.TreeItem {
     }
 
     addChild(childItem: TreeItem) {
+        childItem.parentItem = this;
         this._children.push(childItem);
     }
 
     getChildren(): TreeItem[] {
         return this._children;
+    }
+
+    removeChild(childItem: TreeItem) {
+        for (let i = 0; i < this._children.length; i++) {
+            if (this._children[i] === childItem) {
+                this._children.splice(i, 1);
+                break;
+            }
+        }
     }
 
     getBrowserURL(): URL {
@@ -239,6 +250,21 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
     clearResults() {
         this._resultItems = [];
+        this._onDidChangeTreeData.fire();
+    }
+
+    removeItem(item: TreeItem) {
+        const parentItem = item.parentItem;
+        if (parentItem) {
+            parentItem.removeChild(item);
+        }
+        else {
+            for (let i = 0; i < this._resultItems.length; i++) {
+                if (this._resultItems[i] === item) {
+                    this._resultItems.splice(i, 1);
+                }
+            }
+        }
         this._onDidChangeTreeData.fire();
     }
 
