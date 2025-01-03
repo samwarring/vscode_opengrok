@@ -13,6 +13,7 @@ export enum TreeItemKind {
 export class TreeItem extends vscode.TreeItem {
     private _children: TreeItem[] = [];
     public lineNumber: number | null = null;
+    public firstMatchRange: {start: number, end: number} | null = null;
 
     constructor(
         public readonly searchQuery: opengrok.SearchQuery,
@@ -90,6 +91,12 @@ export class TreeItem extends vscode.TreeItem {
 
         // Initialize the line number
         this.lineNumber = parseInt(lineResult.lineNumber);
+
+        // Initialize the firstMatchRange
+        this.firstMatchRange = {
+            start: lineResult.line.indexOf('<b>'),
+            end: lineResult.line.indexOf('</b>') - 3
+        };
         
         // Format the label:
         // - Trim whitespace.

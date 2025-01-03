@@ -99,13 +99,19 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 			
-			const uri = vscode.Uri.from({
-				scheme: 'vscode',
-				authority: 'file',
-				path: `${localPath}:${treeItem.lineNumber}`
-			});
+			const uri = vscode.Uri.file(localPath);
 			console.log(`Open in editor: ${uri.toString()}`);
-			vscode.commands.executeCommand('vscode.open', uri);
+			const textDocumentShowOptions: vscode.TextDocumentShowOptions = {
+				preserveFocus: true,
+				preview: true,
+				selection: new vscode.Range(
+					treeItem.lineNumber! - 1, treeItem.firstMatchRange!.start,
+					treeItem.lineNumber! - 1, treeItem.firstMatchRange!.end)
+			};
+			vscode.commands.executeCommand(
+				'vscode.open',
+				uri,
+				textDocumentShowOptions);
 		}
 	);
 
