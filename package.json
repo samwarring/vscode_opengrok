@@ -1,7 +1,7 @@
 {
-  "name": "openGrok",
+  "name": "vscode-opengrok",
   "displayName": "OpenGrok",
-  "description": "OpenGrok client for VSCode",
+  "description": "OpenGrok Client for VSCode",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.96.0"
@@ -113,7 +113,7 @@
       "openGrokResultsContainer": [
         {
           "id": "openGrokResults",
-          "name": "Grok"
+          "name": "OpenGrok"
         }
       ]
     },
@@ -121,7 +121,7 @@
       "panel": [
         {
           "id": "openGrokResultsContainer",
-          "title": "Grok",
+          "title": "OpenGrok",
           "icon": "$(search)"
         }
       ]
