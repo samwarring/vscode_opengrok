@@ -313,4 +313,8 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
             return element.getChildren();
         }
     }
+
+    getParent(element: TreeItem): vscode.ProviderResult<TreeItem> {
+        return element.parentItem;
+    }
 }

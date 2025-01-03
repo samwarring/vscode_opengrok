@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
 		canSelectMany: false,
 		showCollapseAll: true
 	};
-	vscode.window.createTreeView('openGrokResults', treeViewOptions);
+	let treeView = vscode.window.createTreeView('openGrokResults', treeViewOptions);
 
 	// Restore state of the treeview.
 	try {
@@ -81,6 +81,9 @@ export function activate(context: vscode.ExtensionContext) {
 				searchQuery,
 				searchResponseBody);
 			treeDataProvider.addResult(resultTreeItem);
+
+			// Focus on the new item in the updated treeview.
+			await treeView.reveal(resultTreeItem, { focus: true });
 
 			// Save treeview state to be restored if workspace is closed.
 			await context.workspaceState.update(
