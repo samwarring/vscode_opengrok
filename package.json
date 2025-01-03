@@ -15,11 +15,12 @@
     "commands": [
       {
         "command": "openGrok.search",
-        "title": "OpenGrok: Search"
+        "title": "OpenGrok: Search",
+        "icon": "$(search)"
       },
       {
         "command": "openGrok.clearResults",
-        "title": "OpenGrok: Clear Results",
+        "title": "OpenGrok: Clear All Results",
         "icon": "$(search-clear-results)"
       },
       {
@@ -96,6 +97,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "openGrok.search",
+          "when": "view == openGrokResults",
+          "group": "navigation"
+        },
         {
           "command": "openGrok.clearResults",
           "when": "view == openGrokResults",
