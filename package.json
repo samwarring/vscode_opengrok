@@ -33,6 +33,11 @@
         "icon": "$(link-external)"
       },
       {
+        "command": "openGrok.copyBrowserLink",
+        "title": "OpenGrok: Copy link",
+        "icon": "$(link)"
+      },
+      {
         "command": "openGrok.openInEditor",
         "title": "OpenGrok: Open In Editor",
         "icon": "$(go-to-file)"
@@ -67,9 +72,18 @@
         {
           "command": "openGrok.removeResultItem",
           "when": "false"
+        },
+        {
+          "command": "openGrok.copyBrowserLink",
+          "when": "false"
         }
       ],
       "view/item/context": [
+        {
+          "command": "openGrok.copyBrowserLink",
+          "when": "view == openGrokResults",
+          "group": "inline@0"
+        },
         {
           "command": "openGrok.openInBrowser",
           "when": "view == openGrokResults",

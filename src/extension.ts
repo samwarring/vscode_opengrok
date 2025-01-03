@@ -149,13 +149,23 @@ export function activate(context: vscode.ExtensionContext) {
 			await context.workspaceState.update(
 				TREEVIEW_STATE_KEY, treeDataProvider.getWorkspaceState());
 		}
-	)
+	);
+
+	const commandCopyBrowserLink = vscode.commands.registerCommand(
+		'openGrok.copyBrowserLink',
+		(item: treeview.TreeItem) => {
+			vscode.env.clipboard.writeText(item.getBrowserURL().toString());
+			vscode.window.showInformationMessage("URL copied to clipboard");
+		}
+	);
 
 	context.subscriptions.push(
 		commandSearch,
 		commandopenInBrowser,
 		commandOpenInEditor,
-		commandClearResults);
+		commandClearResults,
+		commandRemoveResultItem,
+		commandCopyBrowserLink);
 }
 
 // This method is called when your extension is deactivated
