@@ -115,17 +115,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 			// Make a new path relative to the workspace.
 			const localPath = path.join(workspaceFolder, filePathWithoutProject);
-			if (!fs.existsSync(localPath)) {
-				vscode.window.showWarningMessage(`File not found: ${localPath}`);
-				return;
-			}
-			
 			const uri = vscode.Uri.file(localPath);
 			console.log(`Open in editor: ${uri.toString()}`);
 			const textDocumentShowOptions: vscode.TextDocumentShowOptions = {
 				preserveFocus: true,
 				preview: true,
 				selection: new vscode.Range(
+					// vscode.Range begins line numbers at 0.
 					treeItem.lineNumber! - 1, treeItem.firstMatchRange!.start,
 					treeItem.lineNumber! - 1, treeItem.firstMatchRange!.end)
 			};
