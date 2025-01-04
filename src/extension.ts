@@ -104,27 +104,37 @@ export function activate(context: vscode.ExtensionContext) {
 				searchQuery.server = serverURL;
 				searchQuery.projects.push(...defaultProjects);
 			}
-			
-			// Perform query.
-			console.log(searchQuery);
-			let searchResponseBody: opengrok.SearchResponseBody | null = null;
-			try {
-				searchResponseBody = await opengrok.search(searchQuery);
-			}
-			catch (error) {
-				vscode.window.showErrorMessage(
-					`Failed to query the server.\n${error}`)
-				return;
-			}
 
-			// Display the results
-			const resultTreeItem = treeview.buildTreeItems(
-				searchQuery,
-				searchResponseBody);
-			treeDataProvider.addResult(resultTreeItem);
+			// Focus on the results
+			// await vscode.commands.executeCommand('openGrokResults.focus');
 
-			// Focus on the new item in the updated treeview.
-			await treeView.reveal(resultTreeItem, { focus: true });
+			// Show a progress bar for these operations
+			await vscode.window.withProgress({
+				location: vscode.ProgressLocation.Window,
+				title: "OpenGrok: Searching...",
+				cancellable: false
+			}, async (progress, token): Promise<void> => {
+				// Perform query.
+				console.log(searchQuery);
+				let searchResponseBody: opengrok.SearchResponseBody | null = null;
+				try {
+					searchResponseBody = await opengrok.search(searchQuery);
+				}
+				catch (error) {
+					vscode.window.showErrorMessage(
+						`Failed to query the server.\n${error}`)
+					return;
+				}
+	
+				// Display the results
+				const resultTreeItem = treeview.buildTreeItems(
+					searchQuery,
+					searchResponseBody);
+				treeDataProvider.addResult(resultTreeItem);
+	
+				// Focus on the new item in the updated treeview.
+				await treeView.reveal(resultTreeItem, { focus: true });
+			});
 
 			// Save treeview state to be restored if workspace is closed.
 			await context.workspaceState.update(
