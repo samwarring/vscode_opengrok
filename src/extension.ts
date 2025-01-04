@@ -46,13 +46,31 @@ export function activate(context: vscode.ExtensionContext) {
 	const commandSearch = vscode.commands.registerCommand(
 		'openGrok.search',
 		async (searchRequest?: SearchRequest) => {
+			// If user has not configured the extension, prompt them to do so.
+			const config = vscode.workspace.getConfiguration();
+			const serverURL = config.get('openGrok.serverURL', '');
+			const defaultProjects = config.get<string[]>(
+				'openGrok.defaultProjectNames', []);
+			if (serverURL.trim() == '' || defaultProjects.length == 0) {
+				vscode.window.showInformationMessage(
+					'The server and default projects have not been configured.',
+					'Open Settings').then((item) => {
+						if (item == 'Open Settings') {
+							vscode.commands.executeCommand(
+								'workbench.action.openSettings',
+								'openGrok');
+						}
+					});
+				return;
+			}
+
 			let searchQuery: opengrok.SearchQuery | null = null;
 			if (searchRequest?.selection) {
 				// Get query from selected text.
 				let searchString = opengrok.escapeSearchString(searchRequest.selection);
 				searchQuery = {
-					server: '',
-					projects: [],
+					server: serverURL,
+					projects: defaultProjects,
 				};
 				// HACK: If the search string contains special characters
 				// (indicated by presence of a backslash), then do a full search
@@ -83,13 +101,11 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showErrorMessage('Invalid search query');
 					return;
 				}
+				searchQuery.server = serverURL;
+				searchQuery.projects.push(...defaultProjects);
 			}
 			
 			// Perform query.
-			const config = vscode.workspace.getConfiguration();
-			searchQuery.server = config.get('openGrok.serverURL', '');
-			searchQuery.projects.push(...config.get<string[]>(
-				'openGrok.defaultProjectNames', []));
 			console.log(searchQuery);
 			let searchResponseBody: opengrok.SearchResponseBody | null = null;
 			try {
