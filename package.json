@@ -19,6 +19,11 @@
         "icon": "$(search)"
       },
       {
+        "command": "openGrok.searchSelection",
+        "title": "OpenGrok: Search for Selection",
+        "icon": "$(search)"
+      },
+      {
         "command": "openGrok.clearResults",
         "title": "OpenGrok: Clear All Results",
         "icon": "$(search-clear-results)"
@@ -77,6 +82,12 @@
         {
           "command": "openGrok.copyBrowserLink",
           "when": "false"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "openGrok.searchSelection",
+          "when": "editorHasSelection"
         }
       ],
       "view/item/context": [

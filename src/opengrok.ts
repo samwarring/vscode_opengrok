@@ -99,7 +99,7 @@ export function parseQuery(rawQuery: string): SearchQuery | null {
                     // Empty values will cause problems. Skip this clause.
                     break;
                 }
-                else if (value.startsWith('"')) {
+                else if (value.startsWith('"') && !value.endsWith('"')) {
                     // Need to read remaining segments to get the full value.
                     state = State.ExpectValue;
                 }
@@ -132,6 +132,34 @@ export function parseQuery(rawQuery: string): SearchQuery | null {
         return null;
     }
 
+    return result;
+}
+
+// Given a string (selected text in the editor):
+// - Escape special characters if they appear in the string.
+// - Enclose in quotes if it contains a space.
+export function escapeSearchString(searchString: string): string {
+    let result = (searchString
+        .replaceAll('\\', '\\\\') // Escape backslashes first, or else we end
+        .replaceAll('+', '\\+')   //  up escaping backslashes inserted to
+        .replaceAll('-', '\\-')   //  escape other special chars!
+        .replaceAll('&&', '\\&&')
+        .replaceAll('||', '\\||')
+        .replaceAll('!', '\\!')
+        .replaceAll('(', '\\(')
+        .replaceAll(')', '\\)')
+        .replaceAll('{', '\\{')
+        .replaceAll('}', '\\}')
+        .replaceAll('[', '\\[')
+        .replaceAll(']', '\\]')
+        .replaceAll('^', '\\^')
+        .replaceAll('"', '\\"')
+        .replaceAll('~', '\\~')
+        .replaceAll('*', '\\*')
+        .replaceAll('?', '\\?')
+        .replaceAll(':', '\\:')
+        .replaceAll('/', '\\/'));
+    result = `"${result}"`;
     return result;
 }
 

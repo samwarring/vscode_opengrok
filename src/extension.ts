@@ -7,6 +7,10 @@ import * as path from 'path';
 
 const TREEVIEW_STATE_KEY = 'openGrok.treeViewState';
 
+interface SearchRequest {
+	selection?: string
+};
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -41,22 +45,44 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	const commandSearch = vscode.commands.registerCommand(
 		'openGrok.search',
-		async () => {
-			// Prompt query from user.
-			const rawQuery = await vscode.window.showInputBox({
-				title: "OpenGrok: Search",
-				prompt: "Enter an OpenGrok query"
-			});
-			if (!rawQuery) {
-				// User cancelled the operation.
-				return;
+		async (searchRequest?: SearchRequest) => {
+			let searchQuery: opengrok.SearchQuery | null = null;
+			if (searchRequest?.selection) {
+				// Get query from selected text.
+				let searchString = opengrok.escapeSearchString(searchRequest.selection);
+				searchQuery = {
+					server: '',
+					projects: [],
+				};
+				// HACK: If the search string contains special characters
+				// (indicated by presence of a backslash), then do a full search
+				// instead of a symbol search.
+				// See: https://github.com/oracle/opengrok/issues/4701
+				if (searchString.indexOf('\\') == -1) {
+					// No special characters.
+					searchQuery.symbol = [searchString];
+				}
+				else {
+					searchQuery.full = [searchString];
+				}
 			}
+			else {
+				// Prompt query from user.
+				const rawQuery = await vscode.window.showInputBox({
+					title: "OpenGrok: Search",
+					prompt: "Enter an OpenGrok query"
+				});
+				if (!rawQuery) {
+					// User cancelled the operation.
+					return;
+				}
 
-			// Parse query.
-			let searchQuery = opengrok.parseQuery(rawQuery);
-			if (!searchQuery) {
-				vscode.window.showErrorMessage('Invalid search query');
-				return;
+				// Parse query.
+				searchQuery = opengrok.parseQuery(rawQuery);
+				if (!searchQuery) {
+					vscode.window.showErrorMessage('Invalid search query');
+					return;
+				}
 			}
 			
 			// Perform query.
@@ -87,6 +113,31 @@ export function activate(context: vscode.ExtensionContext) {
 			// Save treeview state to be restored if workspace is closed.
 			await context.workspaceState.update(
 				TREEVIEW_STATE_KEY, treeDataProvider.getWorkspaceState());
+		}
+	);
+
+	const commandSearchSelection = vscode.commands.registerCommand(
+		'openGrok.searchSelection',
+		() => {
+			// Get selected text in the active editor.
+			// https://stackoverflow.com/a/73044114/1123681
+			const editor = vscode.window.activeTextEditor;
+			if (!editor) {
+				return;
+			}
+			const selection = editor.selection;
+			if (!selection || selection.isEmpty) {
+				return;
+			}
+			const selectionRange = new vscode.Range(
+				selection.start.line, selection.start.character,
+				selection.end.line, selection.end.character);
+			const selectionText = editor.document.getText(selectionRange);
+
+			// Initiate search for the selected text.
+			vscode.commands.executeCommand('openGrok.search', {
+				selection: selectionText
+			});
 		}
 	);
 
@@ -159,6 +210,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		commandSearch,
+		commandSearchSelection,
 		commandopenInBrowser,
 		commandOpenInEditor,
 		commandClearResults,
