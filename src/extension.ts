@@ -4,7 +4,6 @@ import * as vscode from 'vscode';
 import * as opengrok from './opengrok';
 import * as treeview from './treeview';
 import * as path from 'path';
-import * as fs from 'fs';
 
 const TREEVIEW_STATE_KEY = 'openGrok.treeViewState';
 
