@@ -1,12 +1,13 @@
 {
-  "name": "vscode-opengrok",
+  "name": "samwarring-vscode-opengrok",
   "repository": {
     "type": "git",
     "url": "https://github.com/samwarring/vscode_opengrok.git"
   },
+  "publisher": "samwarring",
   "license": "SEE LICENSE IN LICENSE.txt",
-  "displayName": "OpenGrok",
-  "description": "OpenGrok Client for VSCode",
+  "displayName": "OpenGrok for VS Code",
+  "description": "OpenGrok Client for VS Code",
   "version": "0.0.1",
   "icon": "images/OpenGrokIcon.png",
   "engines": {
