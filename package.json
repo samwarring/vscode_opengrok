@@ -1,5 +1,9 @@
 {
   "name": "vscode-opengrok",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samwarring/vscode_opengrok.git"
+  },
   "displayName": "OpenGrok",
   "description": "OpenGrok Client for VSCode",
   "version": "0.0.1",
