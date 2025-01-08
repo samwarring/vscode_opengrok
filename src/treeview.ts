@@ -242,6 +242,8 @@ export interface WorkspaceState {
 
 export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
+    constructor(public readonly keepRecentSearches: number) {}
+
     // Hold a root item for each query.
     private _resultItems: TreeItem[] = [];
 
@@ -258,6 +260,11 @@ export class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
 
     addResult(resultItem: TreeItem) {
         this._resultItems.unshift(resultItem);
+        if (this.keepRecentSearches > 0) {
+            while (this._resultItems.length > this.keepRecentSearches) {
+                this._resultItems.pop();
+            }
+        }
         this._onDidChangeTreeData.fire();
     }
 

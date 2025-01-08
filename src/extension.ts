@@ -20,7 +20,9 @@ export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "openGrok" is now active!');
 
 	// Register the treeview.
-	let treeDataProvider = new treeview.TreeDataProvider();
+	const keepRecentSearches = vscode.workspace.getConfiguration()
+		.get<number>('openGrok.keepRecentSearches', 0);
+	let treeDataProvider = new treeview.TreeDataProvider(keepRecentSearches);
 	let treeViewOptions: vscode.TreeViewOptions<treeview.TreeItem> = {
 		treeDataProvider: treeDataProvider,
 		canSelectMany: false,

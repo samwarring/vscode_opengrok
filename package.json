@@ -69,6 +69,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "openGrok.keepRecentSearches": {
+          "type": "number",
+          "default": 0,
+          "description": "Keep the results of this many recent searches in the results view. A value of 0 means unlimited."
         }
       }
     },
