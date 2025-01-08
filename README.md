@@ -39,7 +39,8 @@ treated as additional search filters:
 - `def:foo` Search definitions for `foo`.
 - `project:foo` Also search project `foo`.
 - `path:foo` Search for files whose path contains `foo`.
-   
+- `type:foo` Search for files whose type is `foo`.
+
 All other search terms are implicitly prepended with `symbol:`. A search term
 may contain whitespace if the term is enclosed in double-quotes (e.g.
 `full:"with space"`).

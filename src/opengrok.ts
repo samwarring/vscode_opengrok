@@ -6,6 +6,7 @@ export interface SearchQuery {
     server: string;
     projects: string[];
     path?: string[];
+    type?: string[];
     full?: string[];
     def?: string[];
     symbol?: string[];
@@ -50,6 +51,7 @@ export function parseQuery(rawQuery: string): SearchQuery | null {
         server: '',
         projects: [],
         path: [],
+        type: [],
         full: [],
         def: [],
         symbol: []
@@ -76,6 +78,10 @@ export function parseQuery(rawQuery: string): SearchQuery | null {
                 if (segment.startsWith('path:')) {
                     field = result.path!;
                     value = segment.substring('path:'.length);
+                }
+                else if (segment.startsWith('type:')) {
+                    field = result.type!;
+                    value = segment.substring('type:'.length);
                 }
                 else if (segment.startsWith('full:')) {
                     field = result.full!;
@@ -173,6 +179,9 @@ export function getCanonicalQuery(searchQuery: SearchQuery): string {
     searchQuery.path?.forEach((path) => {
         result.push(`path:${path}`);
     })
+    searchQuery.type?.forEach((type) => {
+        result.push(`type:${type}`);
+    });
     searchQuery.full?.forEach((full) => {
         result.push(`full:${full}`);
     });
@@ -193,6 +202,9 @@ export async function search(searchQuery: SearchQuery): Promise<SearchResponseBo
     })
     searchQuery.path?.forEach((path) => {
         queryURL.searchParams.append('path', path);
+    });
+    searchQuery.type?.forEach((type) => {
+        queryURL.searchParams.append('type', type);
     });
     searchQuery.full?.forEach((full) => {
         queryURL.searchParams.append('full', full);
@@ -225,6 +237,9 @@ export function getResultsBrowserURL(searchQuery: SearchQuery): URL {
     });
     searchQuery.path?.forEach((path) => {
         url.searchParams.append('path', path);
+    });
+    searchQuery.type?.forEach((type) => {
+        url.searchParams.append('type', type)
     });
     searchQuery.full?.forEach((full) => {
         url.searchParams.append('full', full);
