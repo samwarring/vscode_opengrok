@@ -82,8 +82,12 @@ export class TreeItem extends vscode.TreeItem {
 
     private constructResultItem() {
         const canonQuery = opengrok.getCanonicalQuery(this.searchQuery)
-        const numResults = this.searchResponseBody.resultCount;
-        this.label = `${canonQuery} (${numResults} matches)`;
+        let numMatches = 0;
+        let filePaths = Object.keys(this.searchResponseBody.results);
+        filePaths.forEach((filePath) => {
+            numMatches += this.searchResponseBody.results[filePath].length;
+        });
+        this.label = `${canonQuery} (${numMatches} matches)`;
     }
 
     private constructDirectoryItem() {
