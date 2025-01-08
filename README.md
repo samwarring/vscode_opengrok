@@ -36,6 +36,7 @@ Enter a query into the input box. The following patterns are recognized and
 treated as additional search filters:
 - `symbol:foo` Search for symbol `foo`.
 - `full:foo` Full search for `foo`.
+- `def:foo` Search definitions for `foo`.
 - `project:foo` Also search project `foo`.
 - `path:foo` Search for files whose path contains `foo`.
    
